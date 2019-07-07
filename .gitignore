@@ -62,3 +62,4 @@ typings/
 
 # 测试代码
 code/
+.vscode/
