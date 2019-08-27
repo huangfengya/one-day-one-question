@@ -191,3 +191,61 @@ function Merge(pHead1, pHead2) {
   return newHead.next;
 }
 ```
+
+## 树的子结构
+
+输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function HasSubtree(pRoot1, pRoot2) {
+  if (pRoot2 === null) return false
+  let q = []
+  while(pRoot1 !== null || q.length > 0) {
+    while (pRoot1 !== null) {
+      q.push(pRoot1)
+      pRoot1 = pRoot1.left
+    }
+    let t = q.pop()
+    if (handler(t, pRoot2))
+      return true
+    pRoot1 = t.right
+  }
+  return false
+}
+
+function handler(node1, node2) {
+  if (node1 === null) {
+    return node2 === null
+  } else if (node2 === null) {
+      return true
+  }
+  return node1.val === node2.val &&
+         handler(node1.left, node2.left) &&
+         handler(node1.right, node2.right)
+}
+```
+
+## 二叉树的镜像
+
+操作给定的二叉树，将其变换为源二叉树的镜像。
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Mirror(root) {
+  if (root === null) return
+  let l = root.left,
+      r = root.right
+  root.left = Mirror(r)
+  root.right = Mirror(l)
+  return root;
+}
+```
