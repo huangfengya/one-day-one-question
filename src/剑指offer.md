@@ -249,3 +249,31 @@ function Mirror(root) {
   return root;
 }
 ```
+
+## 顺时针打印矩阵
+
+输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字，例如，如果输入如下4 X 4矩阵： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 则依次打印出数字1,2,3,4,8,12,16,15,14,13,9,5,6,7,11,10.
+
+> 思路：直接圈定输出位置
+
+```javascript
+/**
+ * 
+ * @param {number[][]} matrix 
+ */
+function printMatrix(matrix) {
+  let row = matrix.length,
+      col = (matrix[0] || []).length;
+  let result = []
+  let l = 0, t = 0, r = col - 1, b = row - 1;
+  while(l <= r && t <= b) {
+    for (let i = l; i <= r; i++) result.push(matrix[t][i])
+    for (let i = t + 1; i <= b; i++) result.push(matrix[i][r])
+
+    for (let i = r - 1; i >= l && t < b; i--) result.push(matrix[b][i])
+    for (let i = b - 1; i > t && l < r; i--) result.push(matrix[i][l])
+    l++, t++, r--, b--;
+  }
+  return result
+}
+```
