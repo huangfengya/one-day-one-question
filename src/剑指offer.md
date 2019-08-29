@@ -277,3 +277,139 @@ function printMatrix(matrix) {
   return result
 }
 ```
+
+## 包含 min 函数的栈
+
+定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
+
+> 思路：创建一个辅助栈，每次 push 的时候，判断该值与辅助栈栈顶的大小，如果小于辅助栈栈顶，入栈。
+> 出栈时都要出栈。
+
+```java
+import java.util.Stack;
+
+public class Solution {
+    private Stack<Integer> a = new Stack<>();
+    private Stack<Integer> b = new Stack<>();
+    
+    public void push(int node) {
+        a.add(node);
+        if (b.isEmpty() || b.peek() > node) {
+          b.add(node);
+        } else {
+          b.add(b.peek());
+        }
+    }
+    
+    public void pop() {
+      a.pop();
+      b.pop();
+    }
+    
+    public int top() {
+      return a.peek();
+    }
+    
+    public int min() {
+      return b.peek();
+    }
+}
+```
+
+## 从上往下打印二叉树
+
+从上往下打印出二叉树的每个节点，同层节点从左至右打印。
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function PrintFromTopToBottom(root) {
+  if (root === null) return [];
+  let queue = [root],
+      num = 1,
+      result = [];
+  while(queue.length > 0) {
+    let tmpNum = 0, tmpArr = [];
+    while(num-- > 0) {
+      let tmpNode = queue.shift()
+      tmpArr.push(tmpNode.val)
+      if (tmpNode.left) {
+        tmpNum++;
+        queue.push(tmpNode.left)
+      }
+      if (tmpNode.right) {
+        tmpNum++;
+        queue.push(tmpNode.right)
+      }
+    }
+    num = tmpNum;
+    result.push(tmpArr)
+  } 
+  return result;
+}
+```
+
+## 二叉搜索树的后序遍历序列
+
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历的结果。如果是则输出Yes,否则输出No。假设输入的数组的任意两个数字都互不相同。
+
+> 思路：取最后一位，遍历前面数组，找到第一个大于最后一位的值，该位置至最后一位，不能出现小于最后一位的值，递归得出结果。
+
+```javascript
+function VerifySquenceOfBST(sequence) {
+  if (sequence.length === 0) return false;
+  return handler(sequence, 0, sequence.length - 1)
+}
+
+function handler(sequence, start, end) {
+  if (start >= end) return true;
+  let flag = false, endNum = sequence[end], mid;
+  for (let i = start; i < end; i++) {
+    if (sequence[i] > endNum) {
+      if (!flag) mid = i
+      flag = true
+    } else if (flag) {
+      return false
+    }
+  }
+  if (!flag) mid = end;
+  return handler(sequence, start, mid - 1) && handler(sequence, mid, end - 1)
+}
+```
+
+## 二叉树中和为某一路径的值
+
+输入一颗二叉树的根节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的list中，数组长度大的数组靠前)
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function FindPath(root, expectNumber) {
+  if (root === null) return [];
+  let result = []
+  handler(root, expectNumber, result, [])
+  return result.sort((a, b) => b.length - a.length)
+}
+
+function handler(node, expectNumber, result, currArr) {
+  if (expectNumber < 0 || node === null) {
+    return
+  }
+  currArr.push(node.val)
+  expectNumber -= node.val
+  if (expectNumber === 0) {
+    if (node.left === null && node.right === null)
+      result.push([...currArr])
+  } else {
+    handler(node.left, expectNumber, result, currArr)
+    handler(node.right, expectNumber, result, currArr)
+  }
+  currArr.pop()
+}
+```
