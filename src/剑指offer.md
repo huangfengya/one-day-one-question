@@ -413,3 +413,108 @@ function handler(node, expectNumber, result, currArr) {
   currArr.pop()
 }
 ```
+
+## 复杂链表的复制
+
+输入一个复杂链表（每个节点中有节点值，以及两个指针，一个指向下一个节点，另一个特殊指针指向任意一个节点），返回结果为复制后复杂链表的head。（注意，输出结果中请不要返回参数中的节点引用，否则判题程序会直接返回空）
+
+> 思路：由于可能链表的 label 不唯一，使用 map 方法的话会导致结果不一致，所以使用直接在老节点后面跟一个其复制节点，新节点的 random 实际上就是 old.random.next，最后取出老节点
+
+```javascript
+/*function RandomListNode(x){
+    this.label = x;
+    this.next = null;
+    this.random = null;
+}*/
+function Clone(pHead) {
+  let tHead = pHead, nHead = null, nHead1 = null;
+  // 创建节点跟在原节点后
+  while (tHead !== null) {
+    let tN = tHead.next
+    let nN = new RandomListNode(tHead.label)
+    tHead.next = nN
+    nN.next = tN
+    tHead = tN
+  }
+  // 添加循环节点
+  tHead = pHead
+  while(tHead !== null) {
+    if (tHead.random) {
+      tHead.next.random = tHead.random.next
+    }
+    tHead = tHead.next.next
+  }
+  // 取出新节点
+  tHead = pHead
+  while (tHead !== null) {
+    if (nHead == null) {
+      nHead = tHead.next
+      nHead1 = nHead
+    } else {
+      nHead1.next = tHead.next
+      nHead1 = nHead1.next
+    }
+    tHead = tHead.next.next
+  }
+  return nHead;
+}
+```
+
+## 二叉搜索树与双向链表
+
+输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Convert(pRootOfTree) {
+  if (pRootOfTree === null ||
+      pRootOfTree.next === null)
+    return pRootOfTree
+  let queue = [],
+      pre = null, head = null;
+  while (pRootOfTree !== null || queue.length > 0) {
+    while (pRootOfTree !== null) {
+      queue.push(pRootOfTree)
+      pRootOfTree = pRootOfTree.left
+    }
+    let t = queue.pop()
+    if (pre === null) {
+      head = t
+    } else {
+      pre.right = t
+      t.left = pre
+    }
+    pre = t
+    pRootOfTree = t.right
+  }
+  return head;
+}
+```
+
+## 数组中出现次数超过一半的数字
+
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+
+> 思路: 摩尔投票法只能选出可能超过一半的数字，是否真的超过，需要再次遍历计算出现次数
+
+```javascript
+function MoreThanHalfNum_Solution(numbers) {
+  let len = numbers.length;
+  if (len === 0) return false;
+  let flag = null, num = 0;
+  for (let i = 0; i < len; i++) {
+    if (flag === numbers[i]) num++
+    else if (num === 0) flag = numbers[i], num = 1
+    else num--
+  }
+  num = 0
+  for (let i = 0; i < len; i++) {
+    if (numbers[i] === flag) num++
+  }
+  return num > numbers.length / 2 ? flag : 0
+}
+```
