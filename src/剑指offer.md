@@ -518,3 +518,117 @@ function MoreThanHalfNum_Solution(numbers) {
   return num > numbers.length / 2 ? flag : 0
 }
 ```
+
+## 最小的K个数
+
+输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+
+> 思路：设置一个数组，维持长度等于K
+
+```javascript
+function GetLeastNumbers_Solution(input, k) {
+	let result = [], len = input.length;
+	if (len === 0 || k === 0 || len < k) return []
+	result.push(input[0]) 
+	for (let i = 1; i < len; i++) {
+		for (let j = 0; j <= result.length; j++) {
+			if (j === result.length || result[j] > input[i]) {
+				result.splice(j, 0, input[i])
+				if (result.length > k) result.pop()
+				break
+			}
+		}
+	}
+	
+	return result
+}
+```
+
+## 连续子数组的最大和
+
+例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和。
+
+```javascript
+function FindGreatestSumOfSubArray(array) {
+	let sum = 0, max = -0XFFFFFFFF, len = array.length;
+	for (let i = 0; i < len; i++) {
+		sum += array[i]
+		max = Math.max(sum, max)
+		if (sum < 0)
+			sum = 0
+	}
+	return max
+}
+```
+
+## 从1到n整数中1出现的次数
+
+求出1~13的整数中1出现的次数,并算出100~1300的整数中1出现的次数？为此他特别数了一下1~13中包含1的数字有1、10、11、12、13因此共出现6次,但是对于后面问题他就没辙了。ACMer希望你们帮帮他,并把问题更加普遍化,可以很快的求出任意非负整数区间中1出现的次数（从1 到 n 中1出现的次数）。
+
+> 思路：规律
+> 个位： 我们知道在个位数上，1会每隔10出现一次，例如1、11、21等等，我们发现以10为一个阶梯的话，每一个完整的阶梯里面都有一个1，所以：n/10 * 1+(n%10!=0 ? 1 : 0)
+> 十位：十位数上出现1的情况应该是10-19，依然沿用分析个位数时候的阶梯理论，我们知道10-19这组数，每隔100出现一次，这次我们的阶梯是100，我们考虑如果露出来的数大于19，那么直接算10个1就行了，因为10-19肯定会出现；如果小于10，那么肯定不会出现十位数的1；如果在10-19之间的，我们计算结果应该是k - 10 + 1。
+> 设 k = n % 10，有 (n / 100) * 10 + (if(k > 19) 10 else if(k < 10) 0 else k - 10 + 1)
+> 百位：在百位，100-199都会出现百位1，一共出现100次，阶梯间隔为1000，100-199这组数，每隔1000就会出现一次。 k = n % 100，有 (n / 1000) * 100 + (if(k >199) 100 else if(k < 100) 0 else k - 100 + 1)
+
+```javascript
+function NumberOf1Between1AndN_Solution(n) {
+	if (n <= 0) return 0
+	let count = 0;
+	for (let i = 1; i <= n; i *= 10) {
+		let t = i * 10,
+			k = n % t
+		count += (n / t | 0) * i
+		count += (k > 2 * i - 1) ? i : k < i ? 0 : (k - i + 1)
+	}
+	return count
+}
+```
+
+## 把整数排成最小的数
+
+输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+
+> 思路：冒泡
+
+```javascript
+function PrintMinNumber(numbers) {
+	numbers = numbers.map(String)
+	let len = numbers.length
+	for (let i = 0; i < len - 1; i++) {
+		for (let j = 0; j < len - i - 1; j++) {
+			if (Number(numbers[j] + numbers[j + 1]) > Number(numbers[j + 1] + numbers[j])) {
+				let t = numbers[j]
+				numbers[j] = numbers[j + 1]
+				numbers[j + 1] = t
+			}
+		}
+	}
+	return numbers.join("")
+}
+```
+
+## 丑数
+
+把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+
+> 思路：一个丑数的因子只有2,3,5，那么丑数p = 2 ^ x * 3 ^ y * 5 ^ z，换句话说一个丑数一定由另一个丑数乘以2或者乘以3或者乘以5得到。
+> 维护三个队列，分别为之前的丑数 * 2，* 3，* 5；然后选出他们当中最小的那个放入队列
+> 真正实现是不需要维护3个队列，只需要记住他们走到了主队列中的哪一步就好了
+
+```javascript
+function GetUglyNumber_Solution(index) {
+	// 前六个数都是丑数
+	if (index <= 6) return index;
+	let p2 = 0, p3 = 0, p5 = 0, newNum = 1;
+	let result = [newNum];
+	while(result.length < index) {
+		newNum = Math.min(result[p2] * 2, result[p3] * 3, result[p5] * 5)
+		if (result[p2] * 2 === newNum) p2++;
+		if (result[p3] * 3 === newNum) p3++;
+		if (result[p5] * 5 === newNum) p5++;
+		result.push(newNum)
+	}
+	return result.pop()
+}
+```
