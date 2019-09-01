@@ -632,3 +632,24 @@ function GetUglyNumber_Solution(index) {
 	return result.pop()
 }
 ```
+
+## 第一个只出现一次的字符
+
+在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）
+
+> 思路：map
+
+```javascript
+function FirstNotRepeatingChar(str)　{
+  let obj = {}, obj1 = {}
+  for (let i = 0; i < str.length; i++) {
+      if (obj1[str[i]]) continue
+      if (obj[str[i]] !== undefined) {
+        delete obj[str[i]]
+        obj1[str[i]] = true
+      } else
+        obj[str[i]] = i
+  }
+  return Object.keys(obj).length > 0 ? obj[Object.keys(obj)[0]] : -1
+}
+```
