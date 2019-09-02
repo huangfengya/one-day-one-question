@@ -653,3 +653,49 @@ function FirstNotRepeatingChar(str)　{
   return Object.keys(obj).length > 0 ? obj[Object.keys(obj)[0]] : -1
 }
 ```
+
+## 数组中的逆序对
+
+在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007
+
+> 思路：将数组分为两份（直到只有一个数据项），合并时，从后往前合并，如果arr[i] > arr[j], 则 arr[mid + 1] ~ arr[j] 都是小于 arr[i] 的 count+= j - (mid+1) +1
+> 嗯，是的，就是归并排序……
+
+```JavaScript
+function InversePairs(data) {
+  let len = data.length;
+  if (len < 2) return 0;
+  let copy = [];
+  for (let i = 0; i < len; i++) copy[i] = data[i]
+  return handler(data, copy, 0, len - 1)
+}
+
+function handler(data, copy, start, end) {
+  if (start == end) {
+    copy[start] = data[start]
+    return 0;
+  }
+
+  let mid = (start + end) / 2 | 0
+  let leftCount = handler(data, copy, start, mid)
+  let rightCount = handler(data, copy, mid + 1, end)
+
+  let i = mid, j = end,
+      copyIdx = end
+  let count = 0;
+  while (i >= start && j >= mid + 1) {
+    if (data[i] > data[j]) {
+      count += j - mid
+      copy[copyIdx--] = data[i--]
+      if (count >= 1000000007)
+        count %= 1000000007
+    } else {
+      copy[copyIdx--] = data[j--]
+    }
+  }
+  while (i >= start) copy[copyIdx--] = data[i--]
+  while (j >= mid + 1) copy[copyIdx--] = data[j--]
+  for (let i = start; i <= end; i++) data[i] = copy[i]
+  return (leftCount + rightCount + count) % 1000000007
+}
+```
