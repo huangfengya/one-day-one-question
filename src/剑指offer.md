@@ -699,3 +699,44 @@ function handler(data, copy, start, end) {
   return (leftCount + rightCount + count) % 1000000007
 }
 ```
+
+## 两个链表的第一个公共交点
+
+输入两个链表，找出它们的第一个公共结点。
+
+> 思路：首先如果他们有公共交点，则后面的一定也是相交的
+> 方案一：map，缺点是如果有重复值就无效
+> 方案二：遍历两个链表，第一遍历完后，就连接到另一个头上
+
+```javascript
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+// 方案一
+function FindFirstCommonNode(pHead1, pHead2) {
+  if (pHead1 === null || pHead2 === null) return null;
+  let obj = {}
+  while (pHead1 !== null) {
+    if (obj[pHead1.val]) obj[pHead1.val].push(pHead1)
+    else obj[pHead1.val] = [pHead1]
+    pHead1 = pHead1.next
+  }
+  while (pHead2 !== null) {
+    if (obj[pHead2.val]) return obj[pHead2.val][0]
+    pHead2 = pHead2.next
+  }
+  return null
+}
+
+// 方案二
+function FindFirstCommonNode(pHead1, pHead2) {
+  if (pHead1 === null || pHead2 === null) return null;
+  let pHead1_1 = pHead1, pHead2_1 = pHead2
+  while (pHead1 !== pHead2) {
+    pHead1 = pHead1 === null ? pHead2_1 : pHead1.next
+    pHead2 = pHead2 === null ? pHead1_1 : pHead2.next
+  }
+  return pHead1
+}
+```
