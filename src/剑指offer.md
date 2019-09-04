@@ -740,3 +740,123 @@ function FindFirstCommonNode(pHead1, pHead2) {
   return pHead1
 }
 ```
+
+## 统计一个数字在排序数组中出现的次数。
+
+统计一个数字在排序数组中出现的次数。
+
+> 思路：
+> 方案一：一遍遍历，时间复杂度 O(n)
+> 方案二：因为是排序数组，直接上二分法查找左右边界，时间复杂度 O(2logn)
+
+```javascript
+function GetNumberOfK(data, k) {
+  let len = data.length
+  if (len < 1) return 0
+  // 求左节点
+  let l = 0, r = 0, end = len - 1;
+  while (l < end) {
+    let mid = (l + end) >> 1
+    if (data[mid] > k) end = mid - 1
+    else if (data[mid] < k) l = mid + 1
+    else end = mid
+  }
+  // 求右节点
+  end = len - 1
+  while (r < end) {
+    let mid = (r + end + 1) >> 1
+    if (data[mid] > k) end = mid - 1
+    else if (data[mid] < k) r = mid + 1
+    else r = mid
+  }
+
+  return data[l] !== k ? 0 : r - l + 1
+}
+```
+
+## 二叉树的深度
+
+输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+
+> 思路：递归，选择左子树和右子树最大的进行相加
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function TreeDepth(pRoot) {
+  if (pRoot === null) return 0;
+  return Math.max(TreeDepth(pRoot.left), TreeDepth(pRoot.right)) + 1
+}
+```
+
+## 平衡二叉树
+
+给定一个二叉树，判断该二叉树是否是平衡二叉树
+
+> 思路：平衡二叉树是指其左子树深度和右子树深度不超过1，其左子树和右子树也是平衡二叉树
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function IsBalanced_Solution(pRoot) {
+  return handler(pRoot) > -1
+}
+
+function handler(node) {
+  if (node === null) return 0;
+  let ld = handler(node.left)
+  if (ld === -1) return -1
+  let rd = handler(node.right)
+  if (rd === -1 || Math.abs(ld - rd) > 1) return -1
+  return Math.max(ld, rd) + 1
+}
+```
+
+## 数组中只出现一次的数
+
+一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
+
+> 思路：还是异或。异或后得出一个数，该数肯定是 r1 ^ r2 的值，该值的 1 肯定是他俩的值不同，找出其他的同样位置的 1，该数组中肯定包含r1 或 r2，因为这个 1 说明了他们的差异，异或该数组得出该值，再异或之前的值得出另一个
+> tmp = r1 ^ r2，  那么 r2 = r1 ^ tmp
+
+```javascript
+/**
+ * 
+ * @param {number[]} array 
+ */
+function FindNumsAppearOnce(array) {
+  let len = array.length;
+  if (len < 2) return []
+  // 求出异或结果
+  let tmp = array.reduce((a, b) => a ^ b);
+
+  if (tmp === 0) return []
+
+  let k = find1(tmp), 
+      // 找出同样位置的数
+      tmpArr = array.filter(val => find1(val) === k),
+      // 其中肯定只包含一个出现一次的数
+      r1 = tmpArr.reduce((a, b) => a ^ b),
+      // tmp = r1 ^ r2, r2 = tmp ^ r1
+      r2 = r1 ^ tmp
+
+  return [r1, r2]
+}
+
+// 找出结果的第一个 1 的位置
+function find1(num) {
+  let k = 0;
+  while(num !== 0) {
+    if (num & 1 === 1) return k
+    num >>= 1
+    k++
+  }
+  return -1
+}
+```
