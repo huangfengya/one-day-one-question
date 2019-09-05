@@ -860,3 +860,220 @@ function find1(num) {
   return -1
 }
 ```
+
+## 和为 S 的连续正序列
+
+> 思路：滑动窗口法
+
+```javascript
+function FindContinuousSequence(sum) {
+  let tmpSum = 0, tmp = [], result = [];
+  for (let i = 1; i <= sum;) {
+    if (tmpSum < sum) {
+      tmpSum += i
+      tmp.push(i++)
+    } else if (tmpSum > sum) {
+      tmpSum -= tmp.shift()
+    } else {
+      result.push([...tmp])
+      tmpSum -= tmp.shift()
+    }
+  }
+  return result
+}
+```
+
+## 和为 S 的两个数字
+
+输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
+
+> 思路：双指针
+
+```java
+import java.util.ArrayList;
+public class Solution {
+  public ArrayList<Integer> FindNumbersWithSum(int [] array,int sum) {
+    int len = array.length;
+    ArrayList<Integer> result = new ArrayList<>();
+    if (len < 1) return result;
+    int l = 0, r = len - 1, min = Integer.MAX_VALUE;
+    while (l < r) {
+      int lVal = array[l], rVal = array[r];
+      if (lVal + rVal > sum) r--;
+      else if (lVal + rVal < sum) l++;
+      else {
+        if (min > lVal * rVal) {
+          min = lVal * rVal;
+          result.clear();
+          result.add(lVal);
+          result.add(rVal);
+        }
+        l++;
+        r--;
+      }
+    }
+    return result;
+  }
+}
+```
+
+## 左旋字符串
+
+汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”
+
+> 思路：从 n 开始，到 len + n 结束
+
+```javascript
+function LeftRotateString(str, n) {
+  if (!str) return "";
+  let len = str.length;
+  if ((n %= len) === 0) return str;
+  let result = ""
+  for (let i = n; i < len + n; i++) {
+    if (i < len) result += str[i]
+    else result += str[i - len]
+  }
+  return result
+}
+```
+
+## 扑克牌顺子
+
+大小王可以为任意值
+
+> 思路：主要是填充值，得出 大小王的个数，顺子的差值为1，用大小王填充缺的值，如果最后大小王 >= 0，则一定是顺子。
+
+```javascript
+function IsContinuous(numbers) {
+  let len = numbers.length;
+  if (len < 5) return false;
+  numbers = numbers.sort((a, b) => a - b)
+  let king = 0, prev = -1;
+  for (let i = 0; i < numbers.length; i++) {
+    if (numbers[i] === 0){
+      king ++
+      continue
+    }
+    if (prev === -1) {
+      prev = numbers[i]
+      continue
+    }
+    let t = numbers[i] - prev
+    if (t === 0) return false
+    king = king - (t - 1)
+    prev = numbers[i]
+  }
+  return king >= 0
+}
+```
+
+## 孩子们的游戏（圆圈中最后剩下的数）
+
+首先,让小朋友们围成一个大圈。然后,他随机指定一个数m,让编号为0的小朋友开始报数。每次喊到m-1的那个小朋友要出列唱首歌,然后可以在礼品箱中任意的挑选礼物,并且不再回到圈中,从他的下一个小朋友开始,继续0...m-1报数....这样下去....直到剩下最后一个小朋友,
+
+> 思路：循环链表
+
+```javascript
+function LastRemaining_Solution(n, m) {
+  if (n <= 0 || m <= 0) return -1
+  // 先组个链表
+  let head = new LinkedNode(null),
+      tmpHead = head
+  for (let i = 0; i < n; i++) {
+    tmpHead.next = new LinkedNode(i)
+    tmpHead = tmpHead.next
+  }
+  tmpHead.next = head.next // 组成链表环
+
+  let c = 0;
+  head = head.next;
+  while (head.next !== head) {
+    if (c++ === m - 2) {
+      head.next = head.next.next
+      c = 0
+    }
+    head = head.next
+  }
+  return head.val
+}
+
+function LinkedNode(val) {
+  this.val = val
+  this.next = null
+}
+```
+
+## 求 1+2+3+...+n
+
+求1+2+3+...+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
+
+> 思路: 主要还是用来做递归的终止条件。
+> 方法一：try...catch 大法，取数组或除以 0，即越界终止递归
+> 方法二：&& ，如果第一个为 false，则不再进行后面的判断，把递归写后面。
+
+```javascript
+function Sum_Solution(n) {
+  let a = n
+  a !== 0 && (a += Sum_Solution(n - 1))
+  return a
+}
+```
+
+## 不用加减乘除做除法
+
+写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
+
+> 思路：^ 得出个位， & << 1 可以得出十位，递归 & === 0
+
+```javascript
+function Add(num1, num2){
+  if (num2 === 0) return num1
+  let x = num1 ^ num2, y = (num1 & num2) << 1
+  return Add(x, y)
+}
+```
+
+## 数组中重复的数字
+
+在一个长度为n的数组里的所有数字都在0到n-1的范围内。 数组中某些数字是重复的，但不知道有几个数字是重复的。也不知道每个数字重复几次。请找出数组中任意一个重复的数字
+
+> 思路：用辅助数组，因为是0 ~ n-1, 所以不用担心数组过长，如果 arr\[number\[i]] === true，说明之前出现过.
+> 另外，有人说可以在原数组上 + n，如果这个再次索引到的值大于 n，则这个值之前出现过，不过缺点是如果数组长度大于 int 的一般，会溢出
+
+```javascript
+function duplicate(numbers, duplication) {
+  let len = numbers.length;
+  let tmp = [];
+  for (let i = 0; i < len; i++) {
+    if (tmp[numbers[i]]) {
+      duplication[0] = numbers[i]
+      return true
+    }
+    tmp[numbers[i]] = true
+  }
+  return false
+}
+```
+
+## 构建乘积数组
+
+给定一个数组A[0,1,...,n-1],请构建一个数组B[0,1,...,n-1],其中B中的元素B[i]=A[0]*A[1]*...*A[i-1]*A[i+1]*...*A[n-1]。不能使用除法。就是不含当前位置的乘积。
+
+> 思路：定义两个值，一个从左往右乘，一个从右往左乘
+
+```javascript
+function multiply(array) {
+  let len = array.length;
+  if (len < 1) return [];
+  let result = array.map(() => 1)
+  let l = 1, r = 1;
+  for (let i = 0; i < len; i++) {
+    result[i] = result[i] * l
+    l *= array[i]
+
+    result[len - i - 1] = result[len - i - 1] * r
+    r *= array[len - i - 1]
+  }
+  return result
+}
+```
