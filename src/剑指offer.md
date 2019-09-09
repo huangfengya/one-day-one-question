@@ -1077,3 +1077,272 @@ function multiply(array) {
   return result
 }
 ```
+
+## 链表中的入口节点
+
+给一个链表，若其中包含环，请找出该链表的环的入口结点，否则，输出null。
+
+> 思路：快慢指针，定义慢指针 p1 已走环外距离 a，环内距离 b，环内未走为 c，则有快指针已走 2*(a + b) = a + b + c + b，即 a = c，所以只需另一个慢指针和 p1 相遇即为入口点
+
+```javascript
+/*function ListNode(x){
+    this.val = x;
+    this.next = null;
+}*/
+function EntryNodeOfLoop(pHead) {
+  // write code here
+  if (pHead === null) return null;
+  let p1 = pHead, p2 = pHead;
+  while (p2.next !== null) {
+    p1 = p1.next;
+    p2 = p2.next.next;
+    if (p1 === p2) break;
+  }
+  if (p2.next === null) return null;
+
+  p2 = pHead
+  while (p1 !== p2) {
+    p1 = p1.next
+    p2 = p2.next
+  }
+  return p1
+}
+```
+
+## 删除链表中重复的节点
+
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+> 思路：双层循环，第二层循环和第一层的值对比，注意如果有重复值需要把外层的删除
+
+```javascript
+function ListNode(x){
+    this.val = x;
+    this.next = null;
+}
+function deleteDuplication(pHead) {
+  if (pHead === null || pHead.next === null)
+    return pHead
+  let nHead = new ListNode(0)
+  nHead.next = pHead
+  let p1 = nHead;
+  while (p1.next !== null) {
+    let flag = false, p2 = p1.next
+    while (p2.next !== null) {
+      if (p2.val === p2.next.val) {
+        flag = true
+        p2.next = p2.next.next
+      } else break
+    }
+    if (flag) p1.next = p1.next.next
+    else p1 = p2
+  }
+  return nHead.next
+}
+```
+
+## 二叉树的第一个节点
+
+给定一个二叉树和其中的一个结点，请找出中序遍历顺序的下一个结点并且返回。注意，树中的结点不仅包含左右子结点，同时包含指向父结点的指针。
+
+> 思路：如果该节点有右子树，那么输出右子树的正常中序遍历
+> 如果节点无右子树:（1）如果是根节点，则输出null,（2）如果非跟节点，如果该节点是其父节点的左孩子，则返回父节点；否则继续向上遍历其父节点的父节点，
+
+```javascript
+/*function TreeLinkNode(x){
+    this.val = x;
+    this.left = null;
+    this.right = null;
+    this.next = null;
+}*/
+function GetNext(pNode) {
+  if (pNode.right !== null) {
+    let t = pNode.right
+    while (t.left !== null) t = t.left
+    return t
+  } else {
+    while (pNode.next !== null) {
+      let t = pNode.next
+      if (t.left === pNode)
+        return t
+      pNode = t
+    }
+    return null
+  }
+}
+```
+
+## 对称的二叉树
+
+请实现一个函数，用来判断一颗二叉树是不是对称的。注意，如果一个二叉树同此二叉树的镜像是同样的，定义其为对称的。
+
+> 思路：节点1的左节点和节点2的右节点判断，节点1的右节点和节点2的左节点判断
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function isSymmetrical(pRoot) {
+  if (pRoot === null) return true
+  return handler(pRoot.left, pRoot.right)
+}
+
+function handler(lNode, rNode) {
+  if (lNode === null || rNode === null) {
+    return lNode === rNode
+  }
+
+  return lNode.val === rNode.val &&
+         handler(lNode.left, rNode.right) &&
+         handler(lNode.right, rNode.left)
+}
+```
+
+## 按之字形打印二叉树
+
+请实现一个函数按照之字形打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右至左的顺序打印，第三行按照从左到右的顺序打印，其他行以此类推。
+
+> 思路：队列 + 记录每层的个数 + flag 标识打印顺序
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Print(pRoot) {
+  if (pRoot === null) return []
+  let num = 1, queue = [pRoot], flag = true
+  let result = []
+  while(queue.length > 0) {
+    let tNum = 0, tNode = null, tResult = []
+    while (num-- > 0) {
+      tNode = queue.shift()
+      if (flag) tResult.push(tNode.val)
+      else tResult.unshift(tNode.val)
+      if (tNode.left) {
+        queue.push(tNode.left)
+        tNum++
+      }
+      if (tNode.right) {
+        queue.push(tNode.right)
+        tNum++
+      }
+    }
+    flag = !flag
+    result.push(tResult)
+    num = tNum
+  }
+  return result
+}
+```
+
+## 把二叉树打印成多行
+
+从上到下按层打印二叉树，同一层结点从左至右输出。每一层输出一行。
+
+> 思路：队列 + 记录每层的数量
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function Print(pRoot) {
+  if (pRoot === null) return []
+  let num = 1, queue = [pRoot]
+  let result = []
+  while(queue.length > 0) {
+    let tNum = 0, tNode = null, tResult = []
+    while (num-- > 0) {
+      tNode = queue.shift()
+      tResult.push(tNode.val)
+      if (tNode.left) {
+        queue.push(tNode.left)
+        tNum++
+      }
+      if (tNode.right) {
+        queue.push(tNode.right)
+        tNum++
+      }
+    }
+    result.push(tResult)
+    num = tNum
+  }
+  return result
+}
+```
+
+## 二叉搜索树的第k个节点
+
+给定一棵二叉搜索树，请找出其中的第k小的结点。例如， （5，3，7，2，4，6，8）    中，按结点数值大小顺序第三小结点的值为4。
+
+> 思路: 二叉搜索树的中序遍历就是从小到大
+
+```javascript
+/* function TreeNode(x) {
+    this.val = x;
+    this.left = null;
+    this.right = null;
+} */
+function KthNode(pRoot, k) {
+  if (pRoot === null) return null
+  let stack = []
+  while (pRoot !== null || stack.length > 0) {
+    while(pRoot !== null) {
+      stack.push(pRoot)
+      pRoot = pRoot.left
+    }
+    pRoot = stack.pop()
+    if (--k === 0) return pRoot
+    pRoot = pRoot.right
+  }
+  return null
+}
+```
+
+## 滑动窗口的最大值
+
+给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。例如，如果输入数组{2,3,4,2,6,2,5,1}及滑动窗口的大小3，那么一共存在6个滑动窗口，他们的最大值分别为{4,4,6,6,6,5}；
+
+> 思路：记录最大值出现的位置，如果滑动后得到更大的，则更新；否则则判断是否最大值已经滑出，如果已滑出，重新获得最大值
+
+```javascript
+"use static"
+function maxInWindows(num, size) {
+  if (size === 1) return num
+  else if (size === 0) return []
+  let len = num.length;
+  let maxIdx = 0, maxNum = num[0], result = [];
+  for (let i = 1; i < len; i++) {
+    if (i < size) {
+      if (maxNum < num[i]) {
+        maxNum = num[i]
+        maxIdx = i
+      }
+      if (i === size - 1) result.push(maxNum)
+      continue
+    }
+    if (num[i] > maxNum) {
+      maxNum = num[i]
+      maxIdx = i
+    } else {
+      if (i - size + 1 > maxIdx) {
+        maxNum = num[i - size + 1]
+        maxIdx = i - size + 1
+        for (let j = maxIdx + 1; j <= i; j++) {
+          if (maxNum < num[j]) {
+            maxNum = num[j]
+            maxIdx = j
+          }
+        }
+      }
+    }
+    result.push(maxNum)
+  }
+  return result
+}
+```

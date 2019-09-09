@@ -1,16 +1,5 @@
 {
   "configurations": [
-    {
-      "type": "java",
-      "name": "CodeLens (Launch) - Solution",
-      "request": "launch",
-      "mainClass": "Solution",
-      "projectName": "LeetCode_2164f6e3"
-    },
-    {
-      "type": "java"
-    },
-    {}
   ]
   
 }
