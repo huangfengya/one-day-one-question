@@ -836,28 +836,21 @@ function FindNumsAppearOnce(array) {
   // 求出异或结果
   let tmp = array.reduce((a, b) => a ^ b);
 
-  if (tmp === 0) return []
+  let diff = 1
+  while ((tmp & 1) === 0) {
+    tmp >>= 1
+    diff <<= 1
+  }
 
-  let k = find1(tmp), 
-      // 找出同样位置的数
-      tmpArr = array.filter(val => find1(val) === k),
-      // 其中肯定只包含一个出现一次的数
-      r1 = tmpArr.reduce((a, b) => a ^ b),
-      // tmp = r1 ^ r2, r2 = tmp ^ r1
-      r2 = r1 ^ tmp
+  let r1 = 0, r2 = 0;
+  for (let val of array) {
+    if ((val & diff) === 0)
+      r1 ^= val
+    else
+      r2 ^= val
+  }
 
   return [r1, r2]
-}
-
-// 找出结果的第一个 1 的位置
-function find1(num) {
-  let k = 0;
-  while(num !== 0) {
-    if (num & 1 === 1) return k
-    num >>= 1
-    k++
-  }
-  return -1
 }
 ```
 
