@@ -1339,3 +1339,33 @@ function maxInWindows(num, size) {
   return result
 }
 ```
+
+## 537. 复数乘法
+
+给定两个表示复数的字符串。
+
+返回表示它们乘积的字符串。注意，根据定义 i2 = -1 。
+
+示例 1:
+
+```
+输入: "1+1i", "1+1i"
+输出: "0+2i"
+解释: (1 + i) * (1 + i) = 1 + i2 + 2 * i = 2i ，你需要将它转换为 0+2i 的形式。
+```
+
+> 思路：(a+bi)\*(c+di) = a\*c-b\*d+(a\*c+b\*d)i
+
+```
+/**
+ * @param {string} a
+ * @param {string} b
+ * @return {string}
+ */
+var complexNumberMultiply = function(a, b) {
+  let reg = /^(-?\d+)\+(-?\d+)i$/
+  let [_1, a1, a2] = reg.exec(a);
+  let [_2, b1, b2] = reg.exec(b);
+  return `${a1 * b1 - a2 * b2}+${a1 * b2 + a2 * b1}i`
+};
+```
